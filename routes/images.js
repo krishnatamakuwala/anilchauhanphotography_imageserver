@@ -17,8 +17,8 @@ router.get("/", async (req, res) => {
 
         const cloudinaryResult = await cloudinary.api.resources({
             type: "upload",
-            prefix: req.query.folderNme,
-            max_results: 500 
+            prefix: req.query.folderName,
+            max_results: 100
         });
         const imageUrls = cloudinaryResult.resources.map(resource => resource.secure_url);
         res.status(200).send({
