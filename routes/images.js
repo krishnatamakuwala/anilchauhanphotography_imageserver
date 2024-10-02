@@ -6,7 +6,11 @@ dotenv.config();
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.API_KEY,
-    api_secret: process.env.API_SECRET
+    api_secret: process.env.API_SECRET,
+    secure: true,
+    settings: {
+        folder_mode: "dynamic"
+    },
 });
 
 router.get("/", async (req, res) => {
@@ -15,11 +19,9 @@ router.get("/", async (req, res) => {
             throw Error("Invalid parameter folderName.")
         }
 
-        const cloudinaryResult = await cloudinary.api.resources({
-            type: "upload",
-            prefix: req.query.folderName,
-            max_results: 100
-        });
+        const cloudinaryResult = await cloudinary.api.resources_by_asset_folder(req.query.folderName, {
+            max_results: 500
+        }, function(error, result) { if (error) { throw error } });
         const imageUrls = cloudinaryResult.resources.map(resource => resource.secure_url);
         res.status(200).send({
             message: "Successfully fetched images.",
